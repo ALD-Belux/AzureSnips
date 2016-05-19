@@ -9,13 +9,30 @@ namespace AzureBlobStorageCORS_console
     {
         private static void Main(string[] args)
         {
-            string account = @"accountname";
-            string key = @"putdakeyhere";
+            string account = @"123";
+            string key = @"456";
             var sc = new StorageCredentials(account, key);
             var csa = new CloudStorageAccount(sc, true);
-            ConfigureCors(csa);
+
+            ReadCors(csa);
+            
+            //ConfigureCors(csa);
             Console.ReadLine();
         }
+        private static void ReadCors(CloudStorageAccount storageAccount)
+        {
+            var blobClient = storageAccount.CreateCloudBlobClient();
+            var serviceProperties = blobClient.GetServiceProperties();
+
+            foreach (var rule in serviceProperties.Cors.CorsRules)
+            {
+                foreach (var origin in rule.AllowedOrigins)
+                {
+                    Console.WriteLine(string.Format("{0}", origin));
+                }
+            }
+        }
+
 
         private static void ConfigureCors(CloudStorageAccount storageAccount)
         {
@@ -30,9 +47,12 @@ namespace AzureBlobStorageCORS_console
                 }
             }
 
+            Console.WriteLine("---");
+
             var cors = new CorsRule();
 
-            cors.AllowedOrigins.Add("myald.be");
+            cors.AllowedOrigins.Add("null");
+            //cors.AllowedOrigins.Add("myald.be");
             //cors.AllowedOrigins.Add("*");
             cors.AllowedMethods = CorsHttpMethods.Get;
             cors.MaxAgeInSeconds = 3600;
@@ -48,6 +68,8 @@ namespace AzureBlobStorageCORS_console
                     Console.WriteLine(string.Format("{0}", origin));
                 }
             }
+
+            Console.WriteLine("---");
         }
     }
 }
